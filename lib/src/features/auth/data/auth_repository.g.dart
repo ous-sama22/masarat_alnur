@@ -56,46 +56,23 @@ final authRepositoryProvider = Provider<AuthRepository>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AuthRepositoryRef = ProviderRef<AuthRepository>;
-String _$firebaseAuthStateChangesHash() =>
-    r'e988cf1dd56a7103fcc308e37211446a70b66354';
+String _$authStateChangesHash() => r'c00e905be3d1427e13cd3e958c86fb964ebab96c';
 
-/// See also [firebaseAuthStateChanges].
-@ProviderFor(firebaseAuthStateChanges)
-final firebaseAuthStateChangesProvider =
-    AutoDisposeStreamProvider<fb_auth.User?>.internal(
-      firebaseAuthStateChanges,
-      name: r'firebaseAuthStateChangesProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$firebaseAuthStateChangesHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+/// See also [authStateChanges].
+@ProviderFor(authStateChanges)
+final authStateChangesProvider = AutoDisposeStreamProvider<AppUser?>.internal(
+  authStateChanges,
+  name: r'authStateChangesProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$authStateChangesHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef FirebaseAuthStateChangesRef =
-    AutoDisposeStreamProviderRef<fb_auth.User?>;
-String _$authStateChangesMappedHash() =>
-    r'1cfe4de146b3dd68e42fcca74348019ad7055614';
-
-/// See also [authStateChangesMapped].
-@ProviderFor(authStateChangesMapped)
-final authStateChangesMappedProvider =
-    AutoDisposeStreamProvider<AppUser?>.internal(
-      authStateChangesMapped,
-      name: r'authStateChangesMappedProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$authStateChangesMappedHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef AuthStateChangesMappedRef = AutoDisposeStreamProviderRef<AppUser?>;
+typedef AuthStateChangesRef = AutoDisposeStreamProviderRef<AppUser?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

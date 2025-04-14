@@ -67,18 +67,20 @@ class UserRepository {
 
     if (!snapshot.exists) {
        print("Creating user document for ${firebaseUser.uid}");
+      // Generate display name from email (everything before @)
+      final displayName = firebaseUser.email?.split('@')[0] ?? 'User';
+      
       final newUser = AppUser(
         uid: firebaseUser.uid,
         email: firebaseUser.email ?? '',
-        // Initially try Firebase display name, nickname onboarding will overwrite
-        displayName: firebaseUser.displayName,
-        role: 'user', // Default role
+        displayName: displayName, // Use generated display name
+        role: 'user',
       );
       await userDocRef.set(newUser);
     } else {
        print("User document already exists for ${firebaseUser.uid}");
-       // Optionally update existing doc with latest email/displayName from Firebase?
-       // await userDocRef.update({'email': firebaseUser.email, 'displayName': firebaseUser.displayName ?? FieldValue.delete()});
+       // Optionally update existing doc with latest email from Firebase
+       await userDocRef.update({'email': firebaseUser.email});
     }
   }
 
@@ -96,7 +98,7 @@ class UserRepository {
 
 
   // --- User Progress Methods ---
-
+  
    Stream<UserProgress?> watchUserProgress(String userId) {
      if (userId.isEmpty) return Stream.value(null);
      return _progressRef()

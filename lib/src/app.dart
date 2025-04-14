@@ -1,112 +1,169 @@
+// lib/src/app.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:masarat_alnur/src/features/auth/data/auth_repository.dart';
-// Import Screens (ensure these paths match your actual file locations)
-import 'package:masarat_alnur/src/features/onboarding/presentation/onboarding_screen.dart'; // Main onboarding host screen
-import 'package:masarat_alnur/src/features/main_app/presentation/main_screen.dart'; // Main app screen with BottomNav
-import 'package:masarat_alnur/src/features/splash/presentation/splash_screen.dart';
-
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:masarat_alnur/src/features/auth/data/user_repository.dart';
+import 'package:masarat_alnur/src/features/auth/domain/app_user.dart';
+import 'package:masarat_alnur/src/features/content/domain/category.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
-// Define App Routes Enum/Class
+// Import Screens
+import 'package:masarat_alnur/src/features/splash/presentation/splash_screen.dart';
+import 'package:masarat_alnur/src/features/onboarding/presentation/welcome_screen.dart';
+import 'package:masarat_alnur/src/features/auth/presentation/auth_screen_host.dart';
+import 'package:masarat_alnur/src/features/onboarding/presentation/congrats_screen.dart';
+import 'package:masarat_alnur/src/features/main_app/presentation/main_screen.dart';
+import 'package:masarat_alnur/src/features/content/presentation/category_list_screen.dart';
+import 'package:masarat_alnur/src/features/content/presentation/sub_category_list_screen.dart';
+import 'package:masarat_alnur/src/features/content/data/content_repository.dart';
+
+// --- App Routes ---
 enum AppRoute {
   splash,
-  onboarding, // Host for welcome, auth, nickname, congrats
-  main,       // Host for home, profile etc.
+  // Onboarding steps
+  onboardingWelcome,
+  onboardingAuth,
+  onboardingCongrats,
+  // Main App
+  main,
+  // Content Routes
+  categories,
+  ongoingCategories,
+  categorySubCategories,
+  ongoingSubCategories,
+  subCategoryTopics,
 }
 
-// Provider for the GoRouter configuration
 final goRouterProvider = Provider<GoRouter>((ref) {
-  final authStateAsync = ref.watch(authStateChangesProvider);
+  final authState = ref.watch(authStateChangesProvider);
+  final userRepo = ref.read(userRepositoryProvider);
+  final contentRepo = ref.read(contentRepositoryProvider);
 
   return GoRouter(
-    initialLocation: '/${AppRoute.splash.name}',
+    initialLocation: '/splash',
+    navigatorKey: GlobalKey<NavigatorState>(),
     debugLogDiagnostics: true,
 
-    // Redirect logic - Simplified
-    redirect: (BuildContext context, GoRouterState state) {
-      final bool loggingIn = state.matchedLocation == '/${AppRoute.onboarding.name}'; // Or specific auth route if nested
-      final bool isSplash = state.matchedLocation == '/${AppRoute.splash.name}';
+    redirect: (BuildContext context, GoRouterState state) async {
+      final bool loading = authState is AsyncLoading;
+      final bool loggedIn = authState.valueOrNull != null;
+      final String? currentUserId = authState.valueOrNull?.uid;
 
-      // Handle auth state
-      final String? redirectLocation = authStateAsync.when(
-        data: (user) {
-          // If logged out AND not already on the onboarding path, go to onboarding
-          if (user == null) {
-            return loggingIn ? null : '/${AppRoute.onboarding.name}';
+      final bool goingToSplash = state.matchedLocation == '/splash';
+      final bool inAuthFlow = state.matchedLocation.startsWith('/onboarding');
+
+      if (loading) {
+        return goingToSplash ? null : '/splash';
+      }
+
+      if (!loggedIn) {
+        return inAuthFlow ? null : '/onboarding/welcome';
+      }
+
+      // --- User is Logged In ---
+      if (currentUserId != null) {
+        final userProfile = await userRepo.fetchUser(currentUserId);
+        
+        if (userProfile != null) {
+          // User exists in Firestore, go to main or congrats based on current location
+          if (state.matchedLocation == '/onboarding/auth') {
+            return '/onboarding/congrats';
+          } else if (goingToSplash || (inAuthFlow && state.matchedLocation != '/onboarding/congrats')) {
+            return '/main';
           }
-          // If logged in AND on splash or onboarding, redirect to main.
-          // The main screen or its initial route will handle nickname check later.
-          if (isSplash || loggingIn) {
-            return '/${AppRoute.main.name}';
-          }
-          // Otherwise (logged in, already on main or other authenticated route), stay put.
-          return null;
-        },
-        loading: () => isSplash ? null : '/${AppRoute.splash.name}', // Stay on splash if loading
-        error: (err, stack) {
-           print("Auth State Error in Redirect: $err");
-           // On error, safest bet is to go to onboarding/auth flow
-           return loggingIn ? null : '/${AppRoute.onboarding.name}';
-        },
-      );
-      print("Redirect Decision: Current=${state.matchedLocation}, RedirectTo=$redirectLocation");
-      return redirectLocation;
+          return null; // Stay on current screen
+        } else {
+          return '/onboarding/auth';
+        }
+      }
+      
+      return '/onboarding/welcome';
     },
 
-    // Refresh based on auth state changes
-    refreshListenable: GoRouterRefreshStream(ref.watch(authStateChangesProvider.stream)),
-
-    // Define Routes
     routes: [
       GoRoute(
-        path: '/${AppRoute.splash.name}',
+        path: '/splash',
         name: AppRoute.splash.name,
         builder: (context, state) => const SplashScreen(),
       ),
       GoRoute(
-        path: '/${AppRoute.onboarding.name}', // Base path for onboarding flow
-        name: AppRoute.onboarding.name,
-        // We'll use nested routes for the onboarding steps for better structure
-        builder: (context, state) => const OnboardingScreen(), // This screen will host the steps
-        // TODO: Add nested routes for welcome, auth, nickname, congrats later
+        path: '/onboarding/welcome',
+        name: AppRoute.onboardingWelcome.name,
+        builder: (context, state) => const WelcomeScreen(),
       ),
       GoRoute(
-        path: '/${AppRoute.main.name}', // Base path for main app
+        path: '/onboarding/auth',
+        name: AppRoute.onboardingAuth.name,
+        builder: (context, state) => const AuthScreenHost(),
+      ),
+      GoRoute(
+        path: '/onboarding/congrats',
+        name: AppRoute.onboardingCongrats.name,
+        builder: (context, state) => const CongratsScreen(),
+      ),
+      GoRoute(
+        path: '/main',
         name: AppRoute.main.name,
         builder: (context, state) => const MainScreen(),
-        // TODO: Add nested routes for Home, Profile etc. later
+      ),
+      // Content Routes
+      GoRoute(
+        path: '/categories',
+        name: AppRoute.categories.name,
+        builder: (context, state) => const CategoryListScreen(),
+      ),
+      GoRoute(
+        path: '/categories/ongoing',
+        name: AppRoute.ongoingCategories.name,
+        builder: (context, state) => const CategoryListScreen(ongoingOnly: true),
+      ),
+      GoRoute(
+        path: '/categories/:categoryId/subcategories',
+        name: AppRoute.categorySubCategories.name,
+        builder: (context, state) {
+          final categoryId = state.pathParameters['categoryId']!;
+          return FutureBuilder<Category?>(
+            future: contentRepo.fetchCategory(categoryId),
+            builder: (context, snapshot) => SubCategoryListScreen(
+              categoryId: categoryId,
+              categoryName: snapshot.data?.title_ar,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/subcategories/ongoing',
+        name: AppRoute.ongoingSubCategories.name,
+        builder: (context, state) => const SubCategoryListScreen(ongoingOnly: true),
+      ),
+      // Topic list route placeholder
+      GoRoute(
+        path: '/subcategories/:subCategoryId/topics',
+        name: AppRoute.subCategoryTopics.name,
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('المواضيع'),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => context.pop(),
+              ),
+            ),
+            body: const Center(child: Text('قريباً')), // Coming Soon
+          );
+        },
       ),
     ],
-     errorBuilder: (context, state) => Scaffold( // Basic error screen
-         body: Center(child: Text('Route not found: ${state.error}')),
-      ),
+    errorBuilder: (context, state) => Scaffold(
+        body: Center(child: Text('Page not found: ${state.error}')),
+    ),
   );
 });
 
-// --- Stream Wrapper for GoRouter Refresh ---
-// (Required for refreshListenable)
-class GoRouterRefreshStream extends ChangeNotifier {
-  GoRouterRefreshStream(Stream<dynamic> stream) {
-    notifyListeners();
-    _subscription = stream.asBroadcastStream().listen(
-          (dynamic _) => notifyListeners(),
-        );
-  }
-
-  late final StreamSubscription<dynamic> _subscription;
-
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
-  }
-}
-
-
-// --- Main Application Widget ---
+// --- Main Application Widget (Updated for Localization) ---
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
@@ -117,16 +174,18 @@ class MyApp extends ConsumerWidget {
     return MaterialApp.router(
       routerConfig: goRouter,
       title: 'Masarat AlNur',
-      localizationsDelegates: AppLocalizations.localizationsDelegates, // Use generated delegates
-      supportedLocales: AppLocalizations.supportedLocales, // Use generated locales
-      locale: const Locale('ar'), // Force Arabic
+
+      // --- Localization Setup ---
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: const Locale('ar'),
+      // --- End Localization Setup ---
+
       theme: ThemeData(
-         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-         // fontFamily: 'Tajawal', // Uncomment if font added
-         useMaterial3: true,
-         // Define consistent padding/margins maybe?
-         // cardTheme: CardTheme(elevation: 2, margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
-         // inputDecorationTheme: InputDecorationTheme(border: OutlineInputBorder())
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+        ),
+        useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
     );
