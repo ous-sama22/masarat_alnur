@@ -1,0 +1,88 @@
+{
+  "@@locale": "ar",
+  "appTitle": "مسارات النور",
+  "welcomeMessage": "أهلاً بك في مسارات النور",
+  "welcomeTagline": "طريقك المبسط للمعرفة الإسلامية",
+  "nextButton": "التالي",
+  "startButton": "ابدأ الآن",
+  "loginTitle": "تسجيل الدخول",
+  "signupTitle": "إنشاء حساب جديد",
+  "emailHint": "البريد الإلكتروني",
+  "passwordHint": "كلمة المرور",
+  "confirmPasswordHint": "تأكيد كلمة المرور",
+  "forgotPasswordPrompt": "هل نسيت كلمة المرور؟",
+  "loginButton": "دخول",
+  "signupButton": "إنشاء حساب",
+  "continueWithGoogle": "المتابعة بواسطة جوجل",
+  "noAccountPrompt": "ليس لديك حساب؟ أنشئ حسابًا",
+  "haveAccountPrompt": "لديك حساب بالفعل؟ سجل الدخول",
+  "nicknamePrompt": "اختر اسمًا مستعارًا...",
+  "nicknameHint": "الاسم المستعار",
+  "saveButton": "حفظ",
+  "congratsTitle": "تهانينا!",
+  "congratsMessage": "ملفك الشخصي جاهز للاستخدام، {userName}!",
+  "@congratsMessage": {
+    "description": "Congrats message with placeholder for username",
+    "placeholders": {
+      "userName": {
+        "type": "String",
+        "example": "أسامة"
+      }
+    }
+  },
+   "welcomeBackMessage": "أهلاً بعودتك، {userName}!",
+   "@welcomeBackMessage": {
+     "description": "Welcome back message with placeholder for username",
+     "placeholders": {
+       "userName": {
+         "type": "String",
+         "example": "أسامة"
+       }
+     }
+   },
+  "goToHomepageButton": "اذهب إلى الرئيسية",
+  "homeTab": "الرئيسية",
+  "profileTab": "الملف الشخصي",
+  "logoutButton": "تسجيل الخروج",
+  "rateUsButton": "قيمنا",
+  "profileNameLabel": "الاسم:",
+  "profileEmailLabel": "البريد الإلكتروني:",
+  "profileTopicsCompletedLabel": "المواضيع المنجزة:",
+  "profileSubCategoriesCompletedLabel": "الفئات الفرعية المنجزة:",
+  "profileCategoriesCompletedLabel": "الفئات المنجزة:",
+  "categoriesSectionTitle": "الفئات",
+  "ongoingCategoriesSectionTitle": "تتابع الآن (فئات)",
+  "ongoingSubCategoriesSectionTitle": "تتابع الآن (فئات فرعية)",
+  "showAllButton": "عرض الكل",
+  "topicsTitle": "المواضيع",
+  "lessonsTitle": "الدروس",
+  "quizTitle": "اختبار",
+   "questionLabel": "السؤال {questionNumber} من {totalQuestions}",
+   "@questionLabel": {
+     "description": "Label showing current question number out of total",
+     "placeholders": {
+       "questionNumber": {"type": "int"},
+       "totalQuestions": {"type": "int"}
+     }
+   },
+   "checkAnswerButton": "تحقق من الإجابة",
+   "nextQuestionButton": "السؤال التالي",
+   "correctAnswerMessage": "صحيح!",
+   "incorrectAnswerMessage": "إجابة خاطئة. الصحيح هو: {correctAnswer}",
+   "@incorrectAnswerMessage": {
+     "description": "Incorrect answer feedback",
+     "placeholders": {
+       "correctAnswer": {"type": "String"}
+     }
+   },
+    "quizCompleteTitle": "اكتمل الاختبار!",
+    "quizScoreLabel": "نتيجتك: {score} / {total}",
+    "@quizScoreLabel": {
+       "description": "Quiz score display",
+       "placeholders": {
+         "score": {"type": "int"},
+         "total": {"type": "int"}
+       }
+    },
+    "retryQuizButton": "إعادة المحاولة"
+}
