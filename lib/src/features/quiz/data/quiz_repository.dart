@@ -82,7 +82,7 @@ class QuizRepository {
   }
 
   // User Progress Methods
-  Future<void> saveAnswer(String userId, String questionId, int selectedOptionIndex) async {
+  Future<bool> saveAnswer(String userId, String questionId, int selectedOptionIndex) async {
     final progressRef = _firestore
         .collection('userProgress')
         .doc(userId)
@@ -93,8 +93,10 @@ class QuizRepository {
         .get()
         .then((doc) => doc.data());
 
-    if (question == null) return;
+    if (question == null) return false;
 
+    final isCorrect = selectedOptionIndex == question.correctOptionIndex;
+    
     // Update the progress document for this topic
     final progressDoc = progressRef.doc(question.topicId);
     final existingProgress = await progressDoc.get();
@@ -102,16 +104,24 @@ class QuizRepository {
     if (!existingProgress.exists) {
       await progressDoc.set({
         'status': QuizStatus.IN_PROGRESS.name,
-        'answers': {questionId: selectedOptionIndex},
+        'answers': isCorrect ? {questionId: selectedOptionIndex} : {},
         'lastAttemptDate': FieldValue.serverTimestamp(),
       });
     } else {
+      final currentAnswers = (existingProgress.data()?['answers'] as Map<String, dynamic>?)?.cast<String, int>() ?? {};
+      
+      if (isCorrect) {
+        currentAnswers[questionId] = selectedOptionIndex;
+      }
+
       await progressDoc.update({
         'status': QuizStatus.IN_PROGRESS.name,
-        'answers.$questionId': selectedOptionIndex,
+        'answers': currentAnswers,
         'lastAttemptDate': FieldValue.serverTimestamp(),
       });
     }
+
+    return isCorrect;
   }
 
   Future<void> submitQuiz(String userId, String topicId, Map<String, int> answers) async {

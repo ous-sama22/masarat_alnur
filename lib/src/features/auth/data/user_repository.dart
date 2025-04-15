@@ -146,19 +146,29 @@ class UserRepository {
 
     Future<void> markTopicAsComplete(String userId, String topicId) async {
       if (userId.isEmpty || topicId.isEmpty) return;
+      
+      // Add to completed topics
       await _progressRef().doc(userId).update({
         'completedTopicIds': FieldValue.arrayUnion([topicId]),
         'lastUpdatedAt': FieldValue.serverTimestamp(),
       });
+
+      // Check if subcategory is complete
+      final topic = await _firestore.collection('topics').doc(topicId).get();
+      if (topic.exists) {
+        final subCategoryId = topic.data()?['subCategoryId'] as String?;
+        if (subCategoryId != null) {
+          await _checkAndUpdateSubCategoryCompletion(userId, subCategoryId);
+        }
+      }
     }
 
    Future<void> updateSubCategoryStarted(String userId, String subCategoryId) async {
        if (userId.isEmpty || subCategoryId.isEmpty) return;
        // Use dot notation with update to set a specific field within the map
-       // This avoids overwriting other entries in startedSubCategoryInfo
-       final fieldPath = 'startedSubCategoryInfo.$subCategoryId';
+       final fieldPath = 'startedSubCategoryInfo';
        await _progressRef().doc(userId).update({
-         fieldPath: FieldValue.serverTimestamp(), // Set start time for this specific subCategory
+         fieldPath: FieldValue.arrayUnion([subCategoryId]),
          'lastUpdatedAt': FieldValue.serverTimestamp(),
        });
      }
@@ -173,10 +183,9 @@ class UserRepository {
 
    Future<void> updateCategoryStarted(String userId, String categoryId) async {
        if (userId.isEmpty || categoryId.isEmpty) return;
-       // Use dot notation with update for nested map field
-       final fieldPath = 'startedCategoryInfo.$categoryId';
+       final fieldPath = 'startedCategoryInfo';
        await _progressRef().doc(userId).update({
-         fieldPath: FieldValue.serverTimestamp(), // Set start time for this specific category
+         fieldPath: FieldValue.arrayUnion([categoryId]),
          'lastUpdatedAt': FieldValue.serverTimestamp(),
        });
      }
@@ -188,6 +197,70 @@ class UserRepository {
          'lastUpdatedAt': FieldValue.serverTimestamp(),
        });
      }
+
+    Future<void> _checkAndUpdateSubCategoryCompletion(String userId, String subCategoryId) async {
+      // Get all topics in the subcategory
+      final topicsSnapshot = await _firestore
+          .collection('topics')
+          .where('subCategoryId', isEqualTo: subCategoryId)
+          .where('status', isEqualTo: 'PUBLISHED')
+          .get();
+
+      // Get user progress
+      final userProgress = await fetchUserProgressOnce(userId);
+      if (userProgress == null) return;
+
+      final completedTopicIds = userProgress.completedTopicIds;
+      final isComplete = topicsSnapshot.docs.every(
+          (doc) => completedTopicIds.contains(doc.id));
+
+      if (isComplete) {
+        // Get category ID for the subcategory
+        final subCategory = await _firestore
+            .collection('subCategories')
+            .doc(subCategoryId)
+            .get();
+        
+        final categoryId = subCategory.data()?['categoryId'] as String?;
+
+        // Remove from started and add to completed
+        await _progressRef().doc(userId).update({
+          'startedSubCategoryInfo': FieldValue.arrayRemove([subCategoryId]),
+          'completedSubCategoryIds': FieldValue.arrayUnion([subCategoryId]),
+          'lastUpdatedAt': FieldValue.serverTimestamp(),
+        });
+
+        if (categoryId != null) {
+          await _checkAndUpdateCategoryCompletion(userId, categoryId);
+        }
+      }
+    }
+
+    Future<void> _checkAndUpdateCategoryCompletion(String userId, String categoryId) async {
+      // Get all subcategories in the category
+      final subCategoriesSnapshot = await _firestore
+          .collection('subCategories')
+          .where('categoryId', isEqualTo: categoryId)
+          .where('status', isEqualTo: 'PUBLISHED')
+          .get();
+
+      // Get user progress
+      final userProgress = await fetchUserProgressOnce(userId);
+      if (userProgress == null) return;
+
+      final completedSubCategoryIds = userProgress.completedSubCategoryIds;
+      final isComplete = subCategoriesSnapshot.docs.every(
+          (doc) => completedSubCategoryIds.contains(doc.id));
+
+      if (isComplete) {
+        // Remove from started and add to completed
+        await _progressRef().doc(userId).update({
+          'startedCategoryInfo': FieldValue.arrayRemove([categoryId]),
+          'completedCategoryIds': FieldValue.arrayUnion([categoryId]),
+          'lastUpdatedAt': FieldValue.serverTimestamp(),
+        });
+      }
+    }
 }
 
 

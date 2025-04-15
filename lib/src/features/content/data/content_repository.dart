@@ -104,6 +104,11 @@ class ContentRepository {
     return snapshot.docs.map((doc) => doc.data()).toList();
   }
 
+  Future<SubCategory?> fetchSubCategory(String subCategoryId) async {
+    final doc = await _subCategoriesRef().doc(subCategoryId).get();
+    return doc.data();
+  }
+
   Future<void> generateSampleData() async {
     // Create العقيدة (Aqeedah) category with subcategories and topics
     final aqeedahCategoryId = _firestore.collection('categories').doc().id;
