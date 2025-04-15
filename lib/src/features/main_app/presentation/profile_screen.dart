@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:masarat_alnur/src/features/auth/data/auth_repository.dart';
 import 'package:masarat_alnur/src/features/auth/data/user_repository.dart';
+import 'package:masarat_alnur/src/features/content/data/content_repository.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -12,6 +13,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userProfileAsync = ref.watch(userProfileStreamProvider);
     final userProgressAsync = ref.watch(userProgressStreamProvider);
+    final isAdminAsync = ref.watch(isCurrentUserAdminProvider);
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -81,6 +83,29 @@ class ProfileScreen extends ConsumerWidget {
               ),
 
               const Spacer(),
+
+              // Admin Section
+              isAdminAsync.when(
+                data: (isAdmin) => isAdmin
+                    ? Column(
+                        children: [
+                          FilledButton.icon(
+                            onPressed: () {
+                              ref.read(contentRepositoryProvider).generateSampleData();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('تم إنشاء البيانات التجريبية')),
+                              );
+                            },
+                            icon: const Icon(Icons.add),
+                            label: const Text('إنشاء بيانات تجريبية'),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                      )
+                    : const SizedBox.shrink(),
+                loading: () => const SizedBox.shrink(),
+                error: (_, __) => const SizedBox.shrink(),
+              ),
 
               // Action Buttons
               FilledButton.icon(

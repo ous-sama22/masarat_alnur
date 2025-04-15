@@ -9,6 +9,8 @@ import 'package:masarat_alnur/src/features/auth/domain/app_user.dart';
 import 'package:masarat_alnur/src/features/content/domain/category.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:masarat_alnur/src/features/quiz/presentation/topic_list_screen.dart';
+import 'package:masarat_alnur/src/features/quiz/presentation/quiz_screen.dart';
 
 // Import Screens
 import 'package:masarat_alnur/src/features/splash/presentation/splash_screen.dart';
@@ -139,21 +141,23 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: AppRoute.ongoingSubCategories.name,
         builder: (context, state) => const SubCategoryListScreen(ongoingOnly: true),
       ),
-      // Topic list route placeholder
       GoRoute(
         path: '/subcategories/:subCategoryId/topics',
         name: AppRoute.subCategoryTopics.name,
         builder: (context, state) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('المواضيع'),
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () => context.pop(),
-              ),
-            ),
-            body: const Center(child: Text('قريباً')), // Coming Soon
+          final subCategoryId = state.pathParameters['subCategoryId']!;
+          final subCategoryName = state.extra as String?;
+          return TopicListScreen(
+            subCategoryId: subCategoryId,
+            subCategoryName: subCategoryName,
           );
+        },
+      ),
+      GoRoute(
+        path: '/topics/:topicId/quiz',
+        builder: (context, state) {
+          final topicId = state.pathParameters['topicId']!;
+          return QuizScreen(topicId: topicId);
         },
       ),
     ],

@@ -96,6 +96,18 @@ class UserRepository {
       }
    }
 
+  Future<bool> isAdmin(String userId) async {
+    if (userId.isEmpty) return false;
+    try {
+      final userDoc = await _usersRef().doc(userId).get();
+      final userData = userDoc.data();
+      return userData?.role == 'admin';
+    } catch (e) {
+      print("Error checking admin status for $userId: $e");
+      return false;
+    }
+  }
+
 
   // --- User Progress Methods ---
   
@@ -218,4 +230,14 @@ Stream<UserProgress?> userProgressStream(Ref ref) { // Use generic Ref
    } else {
       return Stream.value(null); // No user logged in
    }
+}
+
+// Provider to check if the current user is an admin
+@riverpod
+Future<bool> isCurrentUserAdmin(Ref ref) async {
+  final asyncUser = ref.watch(authStateChangesProvider);
+  final userId = asyncUser.value?.uid;
+  if (userId == null) return false;
+  
+  return ref.watch(userRepositoryProvider).isAdmin(userId);
 }

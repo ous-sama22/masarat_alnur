@@ -80,5 +80,24 @@ final userProgressStreamProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef UserProgressStreamRef = AutoDisposeStreamProviderRef<UserProgress?>;
+String _$isCurrentUserAdminHash() =>
+    r'8a4dbd1621e927f9cc31b29ba8391986c5e95608';
+
+/// See also [isCurrentUserAdmin].
+@ProviderFor(isCurrentUserAdmin)
+final isCurrentUserAdminProvider = AutoDisposeFutureProvider<bool>.internal(
+  isCurrentUserAdmin,
+  name: r'isCurrentUserAdminProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$isCurrentUserAdminHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef IsCurrentUserAdminRef = AutoDisposeFutureProviderRef<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

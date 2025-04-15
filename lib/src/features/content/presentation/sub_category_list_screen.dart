@@ -58,63 +58,56 @@ class SubCategoryListScreen extends ConsumerWidget {
                 itemCount: subCategories.length,
                 itemBuilder: (context, index) {
                   final subCategory = subCategories[index];
-                  return _SubCategoryGridItem(subCategory: subCategory);
+                  return InkWell(
+                    onTap: () => context.push(
+                      '/subcategories/${subCategory.id}/topics',
+                      extra: subCategory.title_ar,
+                    ),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: subCategory.imageUrl != null
+                                ? CachedNetworkImage(
+                                    imageUrl: subCategory.imageUrl!,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    placeholder: (context, url) => Container(
+                                      color: Colors.grey[300],
+                                      child: const Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        Container(
+                                      color: Colors.grey[300],
+                                      child: const Icon(Icons.folder, size: 32),
+                                    ),
+                                  )
+                                : Container(
+                                    color: Colors.grey[300],
+                                    child: const Icon(Icons.folder, size: 32),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          subCategory.title_ar,
+                          style: Theme.of(context).textTheme.titleMedium,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  );
                 },
               ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(
           child: Text('Error: $error'),
         ),
-      ),
-    );
-  }
-}
-
-class _SubCategoryGridItem extends StatelessWidget {
-  final SubCategory subCategory;
-
-  const _SubCategoryGridItem({required this.subCategory});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => context.push('/subcategories/${subCategory.id}/topics'),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: subCategory.imageUrl != null
-                  ? CachedNetworkImage(
-                      imageUrl: subCategory.imageUrl!,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      placeholder: (context, url) => Container(
-                        color: Colors.grey[300],
-                        child: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        color: Colors.grey[300],
-                        child: const Icon(Icons.folder, size: 32),
-                      ),
-                    )
-                  : Container(
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.folder, size: 32),
-                    ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            subCategory.title_ar,
-            style: Theme.of(context).textTheme.titleMedium,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
       ),
     );
   }

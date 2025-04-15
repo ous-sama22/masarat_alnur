@@ -190,7 +190,7 @@ class _SubCategoriesStreamProviderElement
 }
 
 String _$ongoingCategoriesStreamHash() =>
-    r'e2b6fe44a03b1df216fb8abb09d3ad208a4c4c5b';
+    r'efadecb76a0cec32d7749a963e4740b2901002f6';
 
 /// See also [ongoingCategoriesStream].
 @ProviderFor(ongoingCategoriesStream)
@@ -211,7 +211,7 @@ final ongoingCategoriesStreamProvider =
 typedef OngoingCategoriesStreamRef =
     AutoDisposeStreamProviderRef<List<Category>>;
 String _$ongoingSubCategoriesStreamHash() =>
-    r'1f380a25d10fca30937495de013abe47e49396e6';
+    r'3a41a5082296068a265c1808bc54c8f5573bd86c';
 
 /// See also [ongoingSubCategoriesStream].
 @ProviderFor(ongoingSubCategoriesStream)
