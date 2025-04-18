@@ -5,10 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:masarat_alnur/src/features/auth/data/auth_repository.dart';
 import 'package:masarat_alnur/src/features/auth/data/user_repository.dart';
-import 'package:masarat_alnur/src/features/auth/domain/app_user.dart';
 import 'package:masarat_alnur/src/features/content/domain/category.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:masarat_alnur/src/features/quiz/presentation/topic_list_screen.dart';
 import 'package:masarat_alnur/src/features/quiz/presentation/quiz_screen.dart';
 

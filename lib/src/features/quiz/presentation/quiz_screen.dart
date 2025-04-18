@@ -22,8 +22,8 @@ class QuizScreen extends ConsumerStatefulWidget {
 
 class _QuizScreenState extends ConsumerState<QuizScreen> {
   late PageController _pageController;
-  Map<String, int> _answers = {};
-  Map<String, bool> _checkedAnswers = {};
+  final Map<String, int> _answers = {};
+  final Map<String, bool> _checkedAnswers = {};
   String? _currentQuestionId;
   bool _showCompleted = false;
   String? _subCategoryId;

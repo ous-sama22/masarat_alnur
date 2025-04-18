@@ -1,6 +1,5 @@
 import 'dart:async'; // For Completer maybe if needed
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:masarat_alnur/src/features/auth/data/auth_repository.dart';
 import 'package:masarat_alnur/src/features/auth/data/user_repository.dart';

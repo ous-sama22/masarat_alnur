@@ -138,7 +138,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
               style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16)),
               onPressed: isLoading ? null : _submit,
-              child: isLoading && !(state is AuthUiPasswordResetSent) // Show loading only for actual login attempt
+              child: isLoading && state is! AuthUiPasswordResetSent // Show loading only for actual login attempt
                   ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                   : Text(l10n.loginButton),
             ),
@@ -172,7 +172,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(l10n.noAccountPrompt.split('?')[0] + '?'), // TODO: Improve string splitting/handling
+                Text('${l10n.noAccountPrompt.split('?')[0]}?'), // TODO: Improve string splitting/handling
                 TextButton(
                   onPressed: isLoading ? null : widget.onGoToSignUp, // Call callback
                   child: Text(l10n.signupButton), // Use signup button text as link text

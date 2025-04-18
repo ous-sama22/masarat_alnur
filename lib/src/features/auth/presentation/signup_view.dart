@@ -119,7 +119,7 @@ class _SignUpViewState extends ConsumerState<SignUpView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                 Text(l10n.haveAccountPrompt.split('?')[0] + '?'), // TODO: Improve string handling
+                 Text('${l10n.haveAccountPrompt.split('?')[0]}?'), // TODO: Improve string handling
                 TextButton(
                   onPressed: isLoading ? null : widget.onGoToSignIn, // Call callback
                   child: Text(l10n.loginButton), // Use login button text as link
