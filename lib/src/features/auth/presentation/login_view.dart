@@ -45,7 +45,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
        if (email.isEmpty || !RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(email)){
             // Show prompt to enter email first
             ScaffoldMessenger.of(context)..hideCurrentSnackBar()..showSnackBar(
-                 const SnackBar(content: Text("\"Please enter a valid email address first.\"")) // TODO: Localize
+                 const SnackBar(content: Text("\"Please enter a valid email address first.\""))
              );
             return;
        }
@@ -62,7 +62,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
     // Listen for password reset success separately if needed
      ref.listen<AuthUiState>(authViewModelProvider, (_, next) {
         // Example: show specific message for password reset email sent
-         next.showSnackbarOnPasswordResetSent(context, "\"Password reset email sent.\""); // TODO: Localize
+         next.showSnackbarOnPasswordResetSent(context, "\"Password reset email sent.\"");
          // Reset state after showing message?
          if (next is AuthUiPasswordResetSent) {
            Future.delayed(const Duration(milliseconds: 100), () {
@@ -79,7 +79,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 20), // Add some top spacing
+            const SizedBox(height: 20),
 
             // Email Field
             TextFormField(
@@ -93,7 +93,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
               textInputAction: TextInputAction.next,
               validator: (value) {
                 if (value == null || value.isEmpty || !value.contains('@')) {
-                  return 'Please enter a valid email'; // TODO: Localize
+                  return 'Please enter a valid email';
                 }
                 return null;
               },
@@ -108,13 +108,13 @@ class _LoginViewState extends ConsumerState<LoginView> {
                 labelText: l10n.passwordHint,
                 prefixIcon: const Icon(Icons.lock_outline),
                 border: const OutlineInputBorder(),
-                // TODO: Add suffix icon for password visibility toggle
+                
               ),
               obscureText: true, // Hide password
               textInputAction: TextInputAction.done,
               validator: (value) {
                 if (value == null || value.isEmpty || value.length < 6) {
-                  return 'Password must be at least 6 characters'; // TODO: Localize
+                  return 'Password must be at least 6 characters';
                 }
                 return null;
               },
@@ -138,7 +138,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
               style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16)),
               onPressed: isLoading ? null : _submit,
-              child: isLoading && state is! AuthUiPasswordResetSent // Show loading only for actual login attempt
+              child: isLoading && state is! AuthUiPasswordResetSent
                   ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                   : Text(l10n.loginButton),
             ),
@@ -149,7 +149,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                 const Expanded(child: Divider()),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text("\"OR\"", style: Theme.of(context).textTheme.bodySmall), // TODO: Localize "OR"
+                  child: Text("OR", style: Theme.of(context).textTheme.bodySmall),
                 ),
                 const Expanded(child: Divider()),
               ]),
@@ -162,7 +162,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                    padding: const EdgeInsets.symmetric(vertical: 12),
                    side: BorderSide(color: Colors.grey.shade300),
                  ),
-              icon: Image.asset('assets/icons/google_logo.png', height: 20.0), // Add google logo asset
+              icon: Image.asset('assets/icons/google_logo.png', height: 20.0),
               label: Text(l10n.continueWithGoogle),
               onPressed: isLoading ? null : _submitGoogle,
             ),
@@ -172,10 +172,10 @@ class _LoginViewState extends ConsumerState<LoginView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('${l10n.noAccountPrompt.split('?')[0]}?'), // TODO: Improve string splitting/handling
+                Text(l10n.noAccountPrompt),
                 TextButton(
-                  onPressed: isLoading ? null : widget.onGoToSignUp, // Call callback
-                  child: Text(l10n.signupButton), // Use signup button text as link text
+                  onPressed: isLoading ? null : widget.onGoToSignUp,
+                  child: Text(l10n.signupButton),
                 ),
               ],
             ),

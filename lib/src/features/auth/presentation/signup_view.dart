@@ -5,7 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // Import AsyncValueUI helper if needed for error display
 
 class SignUpView extends ConsumerStatefulWidget {
-  final VoidCallback onGoToSignIn; // Callback to switch tabs
+  final VoidCallback onGoToSignIn;
 
   const SignUpView({super.key, required this.onGoToSignIn});
 
@@ -31,7 +31,7 @@ class _SignUpViewState extends ConsumerState<SignUpView> {
     if (_formKey.currentState!.validate()) {
        if (_passwordController.text != _confirmPasswordController.text) {
           ScaffoldMessenger.of(context)..hideCurrentSnackBar()..showSnackBar(
-             const SnackBar(content: Text("\"Passwords do not match\"")) // TODO: Localize
+             const SnackBar(content: Text("\"Passwords do not match\""))
           );
           return;
        }
@@ -63,10 +63,10 @@ class _SignUpViewState extends ConsumerState<SignUpView> {
             // Email Field
             TextFormField(
               controller: _emailController,
-              decoration: InputDecoration( /* ... as in LoginView ... */ labelText: l10n.emailHint, prefixIcon: const Icon(Icons.email_outlined), border: const OutlineInputBorder()),
+              decoration: InputDecoration( labelText: l10n.emailHint, prefixIcon: const Icon(Icons.email_outlined), border: const OutlineInputBorder()),
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
-              validator: (value) { /* ... email validation ... */
+              validator: (value) {
                  if (value == null || value.isEmpty || !value.contains('@')) return 'Please enter a valid email'; return null; },
               enabled: !isLoading,
             ),
@@ -75,10 +75,10 @@ class _SignUpViewState extends ConsumerState<SignUpView> {
             // Password Field
             TextFormField(
               controller: _passwordController,
-              decoration: InputDecoration( /* ... as in LoginView ... */ labelText: l10n.passwordHint, prefixIcon: const Icon(Icons.lock_outline), border: const OutlineInputBorder()),
+              decoration: InputDecoration( labelText: l10n.passwordHint, prefixIcon: const Icon(Icons.lock_outline), border: const OutlineInputBorder()),
               obscureText: true,
               textInputAction: TextInputAction.next,
-              validator: (value) { /* ... password length validation ... */
+              validator: (value) {
                  if (value == null || value.isEmpty || value.length < 6) return 'Password must be at least 6 characters'; return null; },
                enabled: !isLoading,
             ),
@@ -92,10 +92,10 @@ class _SignUpViewState extends ConsumerState<SignUpView> {
                textInputAction: TextInputAction.done,
                validator: (value) {
                  if (value == null || value.isEmpty) {
-                   return 'Please confirm your password'; // TODO: Localize
+                   return 'Please confirm your password';
                  }
                  if (value != _passwordController.text) {
-                    return 'Passwords do not match'; // TODO: Localize
+                    return 'Passwords do not match';
                  }
                  return null;
                },
@@ -119,10 +119,10 @@ class _SignUpViewState extends ConsumerState<SignUpView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                 Text('${l10n.haveAccountPrompt.split('?')[0]}?'), // TODO: Improve string handling
+                 Text(l10n.haveAccountPrompt),
                 TextButton(
-                  onPressed: isLoading ? null : widget.onGoToSignIn, // Call callback
-                  child: Text(l10n.loginButton), // Use login button text as link
+                  onPressed: isLoading ? null : widget.onGoToSignIn,
+                  child: Text(l10n.loginButton),
                 ),
               ],
             ),

@@ -8,11 +8,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_view_model.g.dart'; // Riverpod generator
 
-// --- Define UI State ---
-// Using AsyncValue is often cleaner for representing loading/error/data states with Riverpod
-// Alternatively, use a custom sealed class if more complex states needed.
-// Let's stick with our custom sealed class for now as we defined it earlier.
-
 sealed class AuthUiState {
   const AuthUiState();
 }
@@ -30,8 +25,8 @@ class AuthUiAuthSuccessful extends AuthUiState { // Trigger navigation within on
 }
 
 // --- ViewModel using Riverpod Generator ---
-@riverpod // Use generator for simplified provider definition
-class AuthViewModel extends _$AuthViewModel { // Name matches file, 'Notifier' suffix added by generator
+@riverpod 
+class AuthViewModel extends _$AuthViewModel {
 
   // Build method required by generator, sets initial state
   @override
@@ -51,7 +46,6 @@ class AuthViewModel extends _$AuthViewModel { // Name matches file, 'Notifier' s
     switch (result) {
       case AuthSuccess(data: final user):
         print("AuthViewModel: Sign up success for ${user.email}");
-        // Ensure user document exists (includes initial progress doc creation)
         try {
           await _userRepository.createUserDocument(user);
           await _userRepository.createInitialUserProgress(user.uid); // Ensure progress doc
@@ -133,14 +127,9 @@ class AuthViewModel extends _$AuthViewModel { // Name matches file, 'Notifier' s
      }
   }
 
-  // --- Logout ---
-  // Logout logic might live elsewhere now, maybe in a ProfileViewModel?
-  // If needed here, it would trigger navigation differently.
-  // Let's assume ProfileViewModel handles logout for now.
-
   // Function to reset UI state if needed after an event is handled
   void resetUiStateToIdle() {
-    if (state is! AuthUiLoading) { // Don't reset if still loading
+    if (state is! AuthUiLoading) {
       state = const AuthUiInitial();
     }
   }

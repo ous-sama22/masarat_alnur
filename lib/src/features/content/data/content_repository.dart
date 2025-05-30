@@ -4,6 +4,7 @@ import 'package:masarat_alnur/src/features/content/domain/category.dart';
 import 'package:masarat_alnur/src/features/content/domain/sub_category.dart';
 import 'package:masarat_alnur/src/features/content/domain/content_status.dart';
 import 'package:masarat_alnur/src/features/auth/data/user_repository.dart';
+import 'dart:math';
 
 part 'content_repository.g.dart';
 
@@ -110,154 +111,66 @@ class ContentRepository {
   }
 
   Future<void> generateSampleData() async {
-    // Create العقيدة (Aqeedah) category with subcategories and topics
-    final aqeedahCategoryId = _firestore.collection('categories').doc().id;
-    await _categoriesRef().doc(aqeedahCategoryId).set(Category(
-          id: aqeedahCategoryId,
-          title_ar: 'العقيدة',
-          imageUrl: 'https://cdn.pixabay.com/photo/2015/08/11/16/27/islam-884825_640.jpg',
-          order: 1,
-        ));
+    // Get total number of existing categories
+    final categoriesSnapshot = await _categoriesRef().get();
+    final totalExistingCategories = categoriesSnapshot.size;
 
-    // التوحيد subcategory
-    final tawheedSubCatId = _firestore.collection('subcategories').doc().id;
-    await _subCategoriesRef().doc(tawheedSubCatId).set(SubCategory(
-          id: tawheedSubCatId,
-          categoryId: aqeedahCategoryId,
-          title_ar: 'التوحيد',
-          imageUrl: 'https://hips.hearstapps.com/hmg-prod/images/prophet-muhammad-in-islamic-calligraphy-royalty-free-illustration-1676318571.jpg',
-          order: 1,
-        ));
+    // Generate 20 random categories
+    for (int i = 1; i <= 20; i++) {
+      final categoryId = _firestore.collection('categories').doc().id;
+      await _categoriesRef().doc(categoryId).set(Category(
+            id: categoryId,
+            title_ar: 'الفئة رقم ${totalExistingCategories + i}',
+            imageUrl: 'https://picsum.photos/200/300?random=$i',
+            order: totalExistingCategories + i,
+          ));
 
-    // أنواع التوحيد topic
-    final tawheedTypesTopicId = _firestore.collection('topics').doc().id;
-    await _firestore.collection('topics').doc(tawheedTypesTopicId).set({
-      'id': tawheedTypesTopicId,
-      'subCategoryId': tawheedSubCatId,
-      'title_ar': 'أنواع التوحيد',
-      'description_ar': 'تعلم عن أنواع التوحيد الثلاثة: توحيد الربوبية، توحيد الألوهية، وتوحيد الأسماء والصفات',
-      'order': 1,
-      'status': 'PUBLISHED',
-    });
+      // Generate 10-15 random subcategories for each category
+      final numSubCategories = 10 + Random().nextInt(6);
+      for (int j = 1; j <= numSubCategories; j++) {
+        final subCategoryId = _firestore.collection('subcategories').doc().id;
+        await _subCategoriesRef().doc(subCategoryId).set(SubCategory(
+              id: subCategoryId,
+              categoryId: categoryId,
+              title_ar: 'الفئة الفرعية رقم ${j}',
+              imageUrl: 'https://picsum.photos/200/300?random=${i * 100 + j}',
+              order: j,
+            ));
 
-    // Add questions for أنواع التوحيد topic
-    await _firestore.collection('questions').add({
-      'topicId': tawheedTypesTopicId,
-      'question_ar': 'ما هي أنواع التوحيد الرئيسية في الإسلام؟',
-      'options_ar': [
-        'توحيد الربوبية والألوهية والأسماء والصفات',
-        'توحيد الذات والصفات والأفعال',
-        'توحيد العبادة والطاعة والولاء',
-        'توحيد القول والعمل والاعتقاد'
-      ],
-      'correctOptionIndex': 0,
-      'order': 1,
-      'explanation_ar': 'أنواع التوحيد الرئيسية هي: توحيد الربوبية (الإيمان بأن الله هو الخالق والمدبر)، توحيد الألوهية (إفراد الله بالعبادة)، وتوحيد الأسماء والصفات (الإيمان بأسماء الله وصفاته كما وردت)',
-    });
+        // Generate 10-15 random topics for each subcategory
+        final numTopics = 10 + Random().nextInt(6);
+        for (int k = 1; k <= numTopics; k++) {
+          final topicId = _firestore.collection('topics').doc().id;
+          await _firestore.collection('topics').doc(topicId).set({
+            'id': topicId,
+            'subCategoryId': subCategoryId,
+            'title_ar': 'الموضوع رقم ${k}',
+            'description_ar': 'هذا وصف تجريبي للموضوع',
+            'order': k,
+            'status': 'PUBLISHED',
+          });
 
-    // Create الفقه (Fiqh) category with subcategories and topics
-    final fiqhCategoryId = _firestore.collection('categories').doc().id;
-    await _categoriesRef().doc(fiqhCategoryId).set(Category(
-          id: fiqhCategoryId,
-          title_ar: 'الفقه',
-          imageUrl: '',
-          order: 2,
-        ));
+          // Generate 3-8 random questions for each topic
+          final numQuestions = 3 + Random().nextInt(6);
+          for (int l = 1; l <= numQuestions; l++) {
+            final numOptions = 3 + Random().nextInt(4);
+            List<String> options = List.generate(
+              numOptions,
+              (index) => 'الخيار رقم ${index + 1}',
+            );
 
-    // الطهارة subcategory
-    final taharahSubCatId = _firestore.collection('subcategories').doc().id;
-    await _subCategoriesRef().doc(taharahSubCatId).set(SubCategory(
-          id: taharahSubCatId,
-          categoryId: fiqhCategoryId,
-          title_ar: 'الطهارة',
-          imageUrl: 'https://images.pexels.com/photos/36704/pexels-photo.jpg',
-          order: 1,
-        ));
-
-    // أحكام الوضوء topic
-    final wudhuTopicId = _firestore.collection('topics').doc().id;
-    await _firestore.collection('topics').doc(wudhuTopicId).set({
-      'id': wudhuTopicId,
-      'subCategoryId': taharahSubCatId,
-      'title_ar': 'أحكام الوضوء',
-      'description_ar': 'تعلم عن فرائض وسنن الوضوء وكيفيته',
-      'order': 1,
-      'status': 'PUBLISHED',
-    });
-
-    // Add questions for أحكام الوضوء topic
-    await _firestore.collection('questions').add({
-      'topicId': wudhuTopicId,
-      'question_ar': 'ما هي فرائض الوضوء؟',
-      'options_ar': [
-        'غسل الوجه واليدين والمسح على الرأس وغسل الرجلين',
-        'غسل اليدين والوجه والرجلين فقط',
-        'المضمضة والاستنشاق وغسل الوجه واليدين',
-        'غسل القدمين والمسح على الخفين'
-      ],
-      'correctOptionIndex': 0,
-      'order': 1,
-      'explanation_ar': 'فرائض الوضوء هي: غسل الوجه، وغسل اليدين إلى المرفقين، والمسح على الرأس، وغسل الرجلين إلى الكعبين',
-    });
-
-    await _firestore.collection('questions').add({
-      'topicId': wudhuTopicId,
-      'question_ar': 'متى يجب الوضوء؟',
-      'options_ar': [
-        'قبل الصلاة وبعد خروج الريح',
-        'قبل النوم فقط',
-        'بعد الأكل فقط',
-        'قبل قراءة القرآن فقط'
-      ],
-      'correctOptionIndex': 0,
-      'order': 2,
-      'explanation_ar': 'يجب الوضوء قبل الصلاة وبعد نواقض الوضوء مثل خروج الريح أو البول أو الغائط',
-    });
-
-    // Create سيرة النبي (Prophet's Biography) category
-    final seerahCategoryId = _firestore.collection('categories').doc().id;
-    await _categoriesRef().doc(seerahCategoryId).set(Category(
-          id: seerahCategoryId,
-          title_ar: 'السيرة النبوية',
-          imageUrl: 'https://cdn.pixabay.com/photo/2015/08/11/16/27/islam-884825_640.jpg',
-          order: 3,
-        ));
-
-    // مكة المكرمة subcategory
-    final makkahSubCatId = _firestore.collection('subcategories').doc().id;
-    await _subCategoriesRef().doc(makkahSubCatId).set(SubCategory(
-          id: makkahSubCatId,
-          categoryId: seerahCategoryId,
-          title_ar: 'الفترة المكية',
-          imageUrl: 'https://images.pexels.com/photos/36704/pexels-photo.jpg',
-          order: 1,
-        ));
-
-    // نزول الوحي topic
-    final wahyTopicId = _firestore.collection('topics').doc().id;
-    await _firestore.collection('topics').doc(wahyTopicId).set({
-      'id': wahyTopicId,
-      'subCategoryId': makkahSubCatId,
-      'title_ar': 'نزول الوحي',
-      'description_ar': 'قصة نزول الوحي على النبي محمد صلى الله عليه وسلم',
-      'order': 1,
-      'status': 'PUBLISHED',
-    });
-
-    // Add questions for نزول الوحي topic
-    await _firestore.collection('questions').add({
-      'topicId': wahyTopicId,
-      'question_ar': 'أين نزل الوحي لأول مرة على النبي صلى الله عليه وسلم؟',
-      'options_ar': [
-        'غار حراء',
-        'المسجد الحرام',
-        'غار ثور',
-        'المدينة المنورة'
-      ],
-      'correctOptionIndex': 0,
-      'order': 1,
-      'explanation_ar': 'نزل الوحي لأول مرة على النبي محمد صلى الله عليه وسلم في غار حراء، وكان ذلك في شهر رمضان',
-    });
+            await _firestore.collection('questions').add({
+              'topicId': topicId,
+              'question_ar': 'السؤال رقم ${l} ؟',
+              'options_ar': options,
+              'correctOptionIndex': Random().nextInt(numOptions),
+              'order': l,
+              'explanation_ar': 'هذا شرح للإجابة الصحيحة للسؤال رقم ${l}',
+            });
+          }
+        }
+      }
+    }
   }
 }
 

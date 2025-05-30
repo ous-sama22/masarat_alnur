@@ -10,7 +10,6 @@ class OnboardingViewModel extends _$OnboardingViewModel {
   // Build returns the initial state, can be void if no data needed initially
   @override
   FutureOr<void> build() {
-    // No initial async work needed for this simple state
     return null; // Or return Future.value(null);
   }
 
@@ -35,12 +34,10 @@ class OnboardingViewModel extends _$OnboardingViewModel {
 
     try {
       await _userRepository.updateUserData(userId, displayName: nickname.trim());
-       print("OnboardingViewModel: Nickname saved successfully.");
       // Set state to data to indicate success, observers can react
       state = const AsyncData(null);
       return true;
     } catch (e, st) {
-      print("OnboardingViewModel: Error saving nickname: $e");
       state = AsyncError(e, st);
       return false;
     }

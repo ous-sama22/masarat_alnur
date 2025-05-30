@@ -8,7 +8,6 @@ class Category extends Equatable {
   final String? imageUrl;
   final int order;
   final ContentStatus status;
-  // final String? description_ar; // Add back if Categories need descriptions
 
   const Category({
     required this.id, // ID usually populated from Firestore document ID
@@ -16,14 +15,9 @@ class Category extends Equatable {
     this.imageUrl,
     this.order = 0,
     this.status = ContentStatus.PUBLISHED,
-    // this.description_ar,
   });
 
-  // Factory for default/empty state might be useful
   factory Category.empty() => const Category(id: '');
-
-  // Firestore requires a way to get ID if not a field, often handled in Repo/ViewModel
-  // Or add @DocumentID if using code gen that supports it (like Freezed with firestore_converter)
 
   @override
   List<Object?> get props => [id, title_ar, imageUrl, order, status];
@@ -31,7 +25,6 @@ class Category extends Equatable {
   @override
   bool get stringify => true;
 
-   // copyWith for immutable updates
    Category copyWith({
      String? id,
      String? title_ar,

@@ -23,10 +23,9 @@ class _AuthScreenHostState extends ConsumerState<AuthScreenHost>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-     // Reset state when entering auth screen?
-     // WidgetsBinding.instance.addPostFrameCallback((_) {
-     //   ref.read(authViewModelProvider.notifier).resetUiStateToIdle();
-     // });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(authViewModelProvider.notifier).resetUiStateToIdle();
+    });
   }
 
   @override
@@ -77,7 +76,3 @@ class _AuthScreenHostState extends ConsumerState<AuthScreenHost>
     );
   }
 }
-
-// TODO: Create LoginView and SignUpView widgets in separate files
-// TODO: Create AuthViewModel and AuthUiState (with AuthSuccessful state)
-// TODO: Create AsyncValueUI helper extension

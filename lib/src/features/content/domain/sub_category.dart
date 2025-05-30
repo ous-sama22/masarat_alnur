@@ -8,7 +8,6 @@ class SubCategory extends Equatable {
   final String? imageUrl;
   final int order;
   final ContentStatus status;
-  // final String? description_ar; // Add if needed
 
   const SubCategory({
     required this.id,
@@ -17,7 +16,6 @@ class SubCategory extends Equatable {
     this.imageUrl,
     this.order = 0,
     this.status = ContentStatus.PUBLISHED,
-    // this.description_ar,
   });
 
    factory SubCategory.empty() => const SubCategory(id: '');
