@@ -132,7 +132,7 @@ class ContentRepository {
         await _subCategoriesRef().doc(subCategoryId).set(SubCategory(
               id: subCategoryId,
               categoryId: categoryId,
-              title_ar: 'الفئة الفرعية رقم ${j}',
+              title_ar: 'الفئة الفرعية رقم $j',
               imageUrl: 'https://picsum.photos/200/300?random=${i * 100 + j}',
               order: j,
             ));
@@ -144,7 +144,7 @@ class ContentRepository {
           await _firestore.collection('topics').doc(topicId).set({
             'id': topicId,
             'subCategoryId': subCategoryId,
-            'title_ar': 'الموضوع رقم ${k}',
+            'title_ar': 'الموضوع رقم $k',
             'description_ar': 'هذا وصف تجريبي للموضوع',
             'order': k,
             'status': 'PUBLISHED',
@@ -161,11 +161,11 @@ class ContentRepository {
 
             await _firestore.collection('questions').add({
               'topicId': topicId,
-              'question_ar': 'السؤال رقم ${l} ؟',
+              'question_ar': 'السؤال رقم $l ؟',
               'options_ar': options,
               'correctOptionIndex': Random().nextInt(numOptions),
               'order': l,
-              'explanation_ar': 'هذا شرح للإجابة الصحيحة للسؤال رقم ${l}',
+              'explanation_ar': 'هذا شرح للإجابة الصحيحة للسؤال رقم $l',
             });
           }
         }

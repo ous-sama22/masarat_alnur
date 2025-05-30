@@ -244,7 +244,10 @@ class _SubCategorySlider extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(right: 16),
           child: InkWell(
-            onTap: () => context.push('/subcategories/${subCategory.id}/topics'),
+            onTap: () => context.push(
+              '/subcategories/${subCategory.id}/topics',
+              extra: subCategory.title_ar,
+            ),
             child: SizedBox(
               width: 140,
               child: Column(

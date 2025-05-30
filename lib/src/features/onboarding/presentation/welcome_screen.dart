@@ -21,7 +21,6 @@ class WelcomeScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch, // Stretch buttons
             children: [
-              // TODO: Add your App Logo Widget here
               Icon(
                 Icons.lightbulb_outline, size: 100, color: colorScheme.primary),
               const SizedBox(height: 32),
