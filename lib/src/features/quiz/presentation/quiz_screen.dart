@@ -27,7 +27,6 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   String? _currentQuestionId;
   bool _showCompleted = false;
   String? _subCategoryId;
-  String? _topicTitle;
 
   @override
   void initState() {
@@ -47,7 +46,6 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     if (topic != null) {
       setState(() {
         _subCategoryId = topic.subCategoryId;
-        _topicTitle = topic.title_ar;
       });
 
       // Get the category ID
@@ -177,12 +175,13 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   Widget build(BuildContext context) {
     final questionsAsync = ref.watch(questionsStreamProvider(widget.topicId));
 
-    return Scaffold(      appBar: AppBar(
+    return Scaffold(
+      appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => context.pop(),
         ),
-        title: Text(_topicTitle ?? 'الاختبار'),
+        title: const Text('الاختبار'), // Quiz
       ),
       body: questionsAsync.when(
         data: (questions) {
